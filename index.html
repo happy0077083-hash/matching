@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Matching Data Extractor 다운로드</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f4ef;
+        --card: #ffffff;
+        --text: #1f1f1f;
+        --accent: #1b4d3e;
+        --accent-2: #d1a94d;
+      }
+      body {
+        margin: 0;
+        font-family: "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+        background: linear-gradient(135deg, var(--bg), #efe9df 60%);
+        color: var(--text);
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 48px 24px 64px;
+      }
+      .card {
+        background: var(--card);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        padding: 32px;
+      }
+      h1 {
+        font-size: 28px;
+        margin: 0 0 12px;
+      }
+      p {
+        margin: 0 0 18px;
+        line-height: 1.6;
+      }
+      .buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin: 24px 0 12px;
+      }
+      .input-row {
+        display: flex;
+        gap: 12px;
+        margin: 18px 0;
+        flex-wrap: wrap;
+      }
+      .input-row input {
+        flex: 1 1 220px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid #d6dbe1;
+        font-size: 14px;
+        text-transform: uppercase;
+      }
+      .button {
+        display: inline-block;
+        text-decoration: none;
+        text-align: center;
+        padding: 14px 18px;
+        border-radius: 10px;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        font: inherit;
+      }
+      .button.secondary {
+        background: var(--accent-2);
+        color: #1f1f1f;
+      }
+      .note {
+        font-size: 14px;
+        color: #4a4a4a;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <h1>Matching Data Extractor 다운로드</h1>
+        <p>구독 코드를 입력하면 설치 파일을 내려받을 수 있습니다.</p>
+        <div class="input-row">
+          <input id="licenseCode" placeholder="라이선스 코드 입력" />
+          <button id="verifyButton" class="button">확인</button>
+        </div>
+        <div class="buttons" id="downloadButtons" style="display:none;">
+          <button class="button" data-platform="mac">Mac 다운로드 (.dmg)</button>
+          <button class="button secondary" data-platform="win">Windows 다운로드 (.exe)</button>
+        </div>
+        <p id="statusMessage" class="note"></p>
+        <p class="note">
+          Mac에서 '확인할 수 없는 개발자' 경고가 나오면 우클릭 후 '열기'로 1회 승인 후 실행합니다.
+        </p>
+        <p class="note">
+          설치 후 바로 실행 가능하며, 데이터는 기존 Supabase 설정을 그대로 사용합니다.
+        </p>
+      </div>
+    </div>
+    <script>
+      const SUPABASE_URL = 'https://wglaczlazyltjbsugtez.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnbGFjemxhenlsdGpic3VndGV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEzODY0NDQsImV4cCI6MjA2Njk2MjQ0NH0.cmMwNID-5qzh-JJ9LbI3Rce-VInHQn55dOM4U20y24k';
+      const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/get-download-url`;
+
+      const codeInput = document.getElementById('licenseCode');
+      const verifyButton = document.getElementById('verifyButton');
+      const downloadButtons = document.getElementById('downloadButtons');
+      const statusMessage = document.getElementById('statusMessage');
+
+      function setStatus(text, isError) {
+        statusMessage.textContent = text || '';
+        statusMessage.style.color = isError ? '#b42318' : '#4a4a4a';
+      }
+
+      verifyButton.addEventListener('click', async () => {
+        const code = (codeInput.value || '').trim();
+        if (!code) {
+          setStatus('라이선스 코드를 입력하세요.', true);
+          return;
+        }
+
+        verifyButton.disabled = true;
+        setStatus('코드 확인 중...', false);
+
+        try {
+          const res = await fetch(FUNCTION_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              apikey: SUPABASE_ANON_KEY,
+              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            },
+            body: JSON.stringify({ code }),
+          });
+          const data = await res.json();
+
+          if (!res.ok || !data.ok) {
+            setStatus(data.message || '코드 확인에 실패했습니다.', true);
+            downloadButtons.style.display = 'none';
+            return;
+          }
+
+          setStatus('코드 확인 완료. OS를 선택하세요.', false);
+          downloadButtons.style.display = 'grid';
+        } catch (error) {
+          setStatus('서버 연결에 실패했습니다. 잠시 후 다시 시도하세요.', true);
+          downloadButtons.style.display = 'none';
+        } finally {
+          verifyButton.disabled = false;
+        }
+      });
+
+      downloadButtons.addEventListener('click', async (event) => {
+        const button = event.target.closest('button[data-platform]');
+        if (!button) return;
+
+        const code = (codeInput.value || '').trim();
+        const platform = button.dataset.platform;
+
+        button.disabled = true;
+        setStatus('다운로드 링크 생성 중...', false);
+
+        try {
+          const res = await fetch(FUNCTION_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              apikey: SUPABASE_ANON_KEY,
+              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            },
+            body: JSON.stringify({ code, platform }),
+          });
+          const data = await res.json();
+
+          if (!res.ok || !data.ok || !data.url) {
+            setStatus(data.message || '다운로드 링크 생성에 실패했습니다.', true);
+            return;
+          }
+
+          setStatus('다운로드를 시작합니다...', false);
+          window.location.href = data.url;
+        } catch (error) {
+          setStatus('다운로드 링크 생성 중 오류가 발생했습니다.', true);
+        } finally {
+          button.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>
