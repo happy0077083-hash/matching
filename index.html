@@ -96,8 +96,12 @@
           <button class="button secondary" data-platform="win">Windows 다운로드 (.exe)</button>
         </div>
         <p id="statusMessage" class="note"></p>
+        <p class="note" style="color: #d97706; font-weight: 500;">
+          ⚠️ Mac 보안 경고 해결: .dmg 파일을 <strong>우클릭 → "열기"</strong>로 실행하세요.
+          "손상되었습니다" 메시지가 나오면 더블클릭 대신 우클릭으로 여시면 됩니다.
+        </p>
         <p class="note">
-          Mac에서 '확인할 수 없는 개발자' 경고가 나오면 우클릭 후 '열기'로 1회 승인 후 실행합니다.
+          또는 터미널에서: <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">xattr -d com.apple.quarantine ~/Downloads/Matching*.dmg</code>
         </p>
         <p class="note">
           설치 후 바로 실행 가능하며, 데이터는 기존 Supabase 설정을 그대로 사용합니다.
