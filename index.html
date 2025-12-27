@@ -191,6 +191,29 @@
             </p>
           </div>
 
+          <!-- 자동 설치 스크립트 사용 안내 -->
+          <div id="installerInstructions" class="warning-box hidden" style="background: #f0fdf4; border-color: var(--success);">
+            <h4 style="color: #166534;">📥 자동 설치 스크립트 사용 방법</h4>
+            <p><strong>다운로드 후 첫 실행 시 "확인할 수 없습니다" 경고가 나오면:</strong></p>
+            <ol>
+              <li>
+                <strong>install-matching.command 파일을 우클릭</strong> (또는 Control + 클릭)
+              </li>
+              <li>
+                <strong>"열기" 선택</strong>
+              </li>
+              <li>
+                경고 창에서 <strong>"열기" 버튼 클릭</strong>
+              </li>
+              <li>
+                ✅ 터미널이 열리면서 자동으로 설치가 진행됩니다!
+              </li>
+            </ol>
+            <p style="font-size: 13px; color: #166534; margin: 12px 0 0; font-weight: 500;">
+              💡 한 번만 우클릭으로 열면, 다음부터는 더블클릭으로 실행 가능합니다.
+            </p>
+          </div>
+
           <!-- 옵션 2: 일반 설치 -->
           <div class="download-option" onclick="downloadDMG()">
             <h3>💾 일반 설치 (고급 사용자)</h3>
@@ -249,6 +272,7 @@
       const macOptions = document.getElementById('macOptions');
       const windowsOptions = document.getElementById('windowsOptions');
       const dmgInstructions = document.getElementById('dmgInstructions');
+      const installerInstructions = document.getElementById('installerInstructions');
 
       let verifiedCode = '';
       let platform = '';
@@ -319,12 +343,15 @@
       async function downloadInstaller() {
         setStatus('🚀 자동 설치 스크립트를 다운로드합니다...', false);
 
+        // 안내 박스 표시
+        installerInstructions.classList.remove('hidden');
+
         // install-matching.command 파일 다운로드
         // GitHub Pages에서 직접 다운로드하도록 설정
         window.location.href = './install-matching.command';
 
         setTimeout(() => {
-          setStatus('✅ 다운로드 완료! Downloads 폴더에서 "install-matching.command" 파일을 더블클릭하세요.', false);
+          setStatus('✅ 다운로드 완료! Downloads 폴더에서 스크립트를 우클릭 → "열기"로 실행하세요.', false);
         }, 1000);
       }
 
