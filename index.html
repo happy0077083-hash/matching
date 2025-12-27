@@ -22,7 +22,7 @@
         color: var(--text);
       }
       .wrap {
-        max-width: 900px;
+        max-width: 800px;
         margin: 0 auto;
         padding: 48px 24px 64px;
       }
@@ -39,7 +39,7 @@
       }
       h2 {
         font-size: 20px;
-        margin: 24px 0 12px;
+        margin: 24px 0 16px;
         color: var(--accent);
       }
       p {
@@ -78,6 +78,11 @@
         opacity: 0.9;
         transform: translateY(-1px);
       }
+      .button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
       .button.secondary {
         background: var(--accent-2);
         color: #1f1f1f;
@@ -86,48 +91,78 @@
         background: var(--success);
         color: #fff;
       }
-      .download-option {
+      .buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .step-card {
+        background: #f9fafb;
         border: 2px solid #e5e7eb;
         border-radius: 12px;
         padding: 20px;
         margin: 16px 0;
-        cursor: pointer;
-        transition: all 0.2s;
       }
-      .download-option:hover {
-        border-color: var(--accent);
-        background: #f9fafb;
-      }
-      .download-option.recommended {
-        border-color: var(--success);
-        background: #f0fdf4;
-      }
-      .download-option h3 {
-        margin: 0 0 8px;
+      .step-card h3 {
+        margin: 0 0 12px;
         font-size: 18px;
+        color: var(--accent);
         display: flex;
         align-items: center;
         gap: 8px;
       }
-      .download-option p {
-        margin: 0;
-        color: #6b7280;
-        font-size: 14px;
+      .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: white;
+        font-weight: 700;
+        font-size: 16px;
       }
-      .badge {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 12px;
+      .command-box {
+        background: #1f2937;
+        color: #f9fafb;
+        padding: 16px;
+        border-radius: 8px;
+        font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+        font-size: 14px;
+        margin: 12px 0;
+        position: relative;
+        overflow-x: auto;
+      }
+      .command-box code {
+        background: transparent;
+        color: #10b981;
+        padding: 0;
+      }
+      .copy-button {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        padding: 6px 12px;
+        background: var(--success);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
         font-size: 12px;
         font-weight: 600;
+        transition: all 0.2s;
       }
-      .badge.recommended {
-        background: var(--success);
-        color: #fff;
+      .copy-button:hover {
+        background: #059669;
+      }
+      .copy-button.copied {
+        background: #3b82f6;
       }
       .note {
         font-size: 14px;
-        color: #4a4a4a;
+        color: #6b7280;
         margin-top: 8px;
       }
       .warning-box {
@@ -137,28 +172,30 @@
         border-radius: 8px;
         margin: 20px 0;
       }
-      .warning-box h4 {
-        margin: 0 0 8px;
+      .warning-box p {
+        margin: 0;
         color: #856404;
-        font-size: 16px;
       }
-      .warning-box ol {
-        margin: 8px 0;
-        padding-left: 24px;
+      .success-box {
+        background: #d1fae5;
+        border-left: 4px solid var(--success);
+        padding: 16px;
+        border-radius: 8px;
+        margin: 20px 0;
       }
-      .warning-box li {
-        margin: 6px 0;
-        line-height: 1.5;
-      }
-      code {
-        background: #f3f4f6;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 13px;
-        font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+      .success-box p {
+        margin: 0;
+        color: #065f46;
+        font-weight: 500;
       }
       .hidden {
         display: none;
+      }
+      .mac-icon {
+        font-size: 24px;
+      }
+      .windows-icon {
+        font-size: 24px;
       }
     </style>
   </head>
@@ -175,89 +212,102 @@
 
         <p id="statusMessage" class="note"></p>
 
-        <!-- Mac 다운로드 옵션 -->
-        <div id="macOptions" class="hidden">
-          <h2>Mac 설치 방법 선택</h2>
+        <!-- Mac 설치 가이드 -->
+        <div id="macGuide" class="hidden">
+          <h2>🍎 Mac 설치 가이드</h2>
 
-          <!-- 옵션 1: 자동 설치 (권장) -->
-          <div class="download-option recommended" onclick="downloadInstaller()">
+          <div class="buttons">
+            <button class="button success" onclick="downloadMac()">
+              <span class="mac-icon"></span> Mac 다운로드 (.dmg)
+            </button>
+          </div>
+
+          <div class="warning-box">
+            <p><strong>⚠️ Mac 사용자 필독</strong></p>
+            <p style="margin-top: 8px;">다운로드 후 "손상되었습니다" 오류가 나오면 아래 단계를 따라주세요.</p>
+          </div>
+
+          <!-- 단계 1: 터미널 열기 -->
+          <div class="step-card">
             <h3>
-              🚀 자동 설치 (권장)
-              <span class="badge recommended">간편함</span>
+              <span class="step-number">1</span>
+              터미널 열기
             </h3>
-            <p>설치 스크립트를 다운로드합니다. 더블클릭만 하면 자동으로 설치가 진행됩니다.</p>
-            <p style="margin-top: 8px; font-weight: 500; color: var(--accent);">
-              ✓ 터미널 명령어 불필요 &nbsp;|&nbsp; ✓ 한 번에 설치 완료
-            </p>
+            <p>Spotlight 검색(<kbd>⌘ Cmd + Space</kbd>)에서 "터미널" 입력 후 Enter</p>
           </div>
 
-          <!-- 자동 설치 스크립트 사용 안내 -->
-          <div id="installerInstructions" class="warning-box hidden" style="background: #f0fdf4; border-color: var(--success);">
-            <h4 style="color: #166534;">📥 자동 설치 스크립트 사용 방법</h4>
-            <p><strong>다운로드 후 첫 실행 시 "확인할 수 없습니다" 경고가 나오면:</strong></p>
-            <ol>
-              <li>
-                <strong>install-matching.command 파일을 우클릭</strong> (또는 Control + 클릭)
-              </li>
-              <li>
-                <strong>"열기" 선택</strong>
-              </li>
-              <li>
-                경고 창에서 <strong>"열기" 버튼 클릭</strong>
-              </li>
-              <li>
-                ✅ 터미널이 열리면서 자동으로 설치가 진행됩니다!
-              </li>
-            </ol>
-            <p style="font-size: 13px; color: #166534; margin: 12px 0 0; font-weight: 500;">
-              💡 한 번만 우클릭으로 열면, 다음부터는 더블클릭으로 실행 가능합니다.
-            </p>
+          <!-- 단계 2: 명령어 실행 -->
+          <div class="step-card">
+            <h3>
+              <span class="step-number">2</span>
+              아래 명령어 복사 → 붙여넣기 → Enter
+            </h3>
+            <div class="command-box">
+              <code id="macCommand">xattr -d com.apple.quarantine ~/Downloads/Matching*.dmg</code>
+              <button class="copy-button" onclick="copyMacCommand()">📋 복사</button>
+            </div>
+            <p class="note">💡 이 명령어는 Apple 보안 속성만 제거합니다. 파일은 안전합니다.</p>
           </div>
 
-          <!-- 옵션 2: 일반 설치 -->
-          <div class="download-option" onclick="downloadDMG()">
-            <h3>💾 일반 설치 (고급 사용자)</h3>
-            <p>DMG 파일을 다운로드합니다. 터미널 명령어 실행이 필요합니다.</p>
-            <p style="margin-top: 8px; font-weight: 500; color: #6b7280;">
-              ⚠️ 터미널 명령어 필요 &nbsp;|&nbsp; ⚠️ 수동 설치 과정
-            </p>
+          <!-- 단계 3: DMG 실행 -->
+          <div class="step-card">
+            <h3>
+              <span class="step-number">3</span>
+              DMG 파일 더블클릭
+            </h3>
+            <p>Downloads 폴더에서 <strong>Matching-Data-Extractor-1.0.0-mac.dmg</strong> 파일을 더블클릭</p>
           </div>
 
-          <!-- DMG 사용 시 안내 -->
-          <div id="dmgInstructions" class="warning-box hidden">
-            <h4>⚠️ Mac 사용자 필독 - DMG 설치 방법</h4>
-            <p><strong>다운로드 후 "손상되었습니다" 오류가 나면:</strong></p>
-            <ol>
-              <li>
-                <strong>방법 1 (권장):</strong> 터미널을 열고 아래 명령어 복사 → 붙여넣기 → Enter
-                <br><code>xattr -d com.apple.quarantine ~/Downloads/Matching*.dmg</code>
-                <button onclick="copyCommand()" class="button secondary" style="margin-top: 8px; padding: 8px 12px; font-size: 13px;">📋 명령어 복사</button>
-                <span id="copySuccess" class="hidden" style="color: var(--success); margin-left: 8px; font-weight: 500;">✅ 복사됨!</span>
-              </li>
-              <li><strong>방법 2:</strong> DMG 파일을 우클릭 → "열기" 선택 (더블클릭 대신)</li>
-            </ol>
-            <p style="font-size: 13px; color: #666; margin: 12px 0 0;">
-              💡 이 오류는 Apple 보안 정책 때문이며, 파일은 안전합니다.
-            </p>
+          <!-- 단계 4: 설치 완료 -->
+          <div class="step-card">
+            <h3>
+              <span class="step-number">4</span>
+              Applications 폴더로 드래그
+            </h3>
+            <p>열린 창에서 앱 아이콘을 Applications 폴더로 드래그하여 설치 완료!</p>
+          </div>
+
+          <div class="success-box">
+            <p>✅ 설치 완료 후 바로 실행 가능하며, 데이터는 기존 Supabase 설정을 그대로 사용합니다.</p>
           </div>
         </div>
 
-        <!-- Windows 다운로드 옵션 -->
-        <div id="windowsOptions" class="hidden">
-          <h2>Windows 설치 방법</h2>
-          <div class="download-option" onclick="downloadWindows()">
-            <h3>💻 Windows 설치 파일 다운로드</h3>
-            <p>.exe 파일을 다운로드합니다. 다운로드 후 더블클릭하여 설치하세요.</p>
+        <!-- Windows 설치 가이드 -->
+        <div id="windowsGuide" class="hidden">
+          <h2>💻 Windows 설치 가이드</h2>
+
+          <div class="buttons">
+            <button class="button success" onclick="downloadWindows()">
+              <span class="windows-icon">🪟</span> Windows 다운로드 (.exe)
+            </button>
+          </div>
+
+          <div class="step-card">
+            <h3>
+              <span class="step-number">1</span>
+              설치 파일 실행
+            </h3>
+            <p>다운로드한 <strong>.exe</strong> 파일을 더블클릭하여 설치를 시작하세요.</p>
+          </div>
+
+          <div class="step-card">
+            <h3>
+              <span class="step-number">2</span>
+              설치 진행
+            </h3>
+            <p>설치 마법사의 안내를 따라 설치를 완료하세요.</p>
+          </div>
+
+          <div class="success-box">
+            <p>✅ 설치 완료 후 바로 실행 가능합니다.</p>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <h2>📋 설치 후 안내</h2>
-        <p>설치 후 바로 실행 가능하며, 데이터는 기존 Supabase 설정을 그대로 사용합니다.</p>
-        <p class="note">
-          문제가 발생하면 라이선스 코드와 함께 문의해 주세요.
-        </p>
+        <h2>❓ 문제가 발생하면</h2>
+        <p>라이선스 코드와 함께 오류 메시지를 전달해 주세요.</p>
+        <p class="note">이메일 또는 고객 지원 채널을 통해 문의하실 수 있습니다.</p>
       </div>
     </div>
 
@@ -269,17 +319,14 @@
       const codeInput = document.getElementById('licenseCode');
       const verifyButton = document.getElementById('verifyButton');
       const statusMessage = document.getElementById('statusMessage');
-      const macOptions = document.getElementById('macOptions');
-      const windowsOptions = document.getElementById('windowsOptions');
-      const dmgInstructions = document.getElementById('dmgInstructions');
-      const installerInstructions = document.getElementById('installerInstructions');
+      const macGuide = document.getElementById('macGuide');
+      const windowsGuide = document.getElementById('windowsGuide');
 
       let verifiedCode = '';
-      let platform = '';
 
       function setStatus(text, isError) {
         statusMessage.textContent = text || '';
-        statusMessage.style.color = isError ? '#b42318' : '#4a4a4a';
+        statusMessage.style.color = isError ? '#b42318' : '#6b7280';
       }
 
       verifyButton.addEventListener('click', async () => {
@@ -306,57 +353,51 @@
 
           if (!res.ok || !data.ok) {
             setStatus(data.message || '코드 확인에 실패했습니다.', true);
-            macOptions.classList.add('hidden');
-            windowsOptions.classList.add('hidden');
+            macGuide.classList.add('hidden');
+            windowsGuide.classList.add('hidden');
             return;
           }
 
           verifiedCode = code;
 
-          // OS 감지
+          // OS 자동 감지
           const userAgent = navigator.userAgent.toLowerCase();
           const isMac = userAgent.includes('mac');
           const isWindows = userAgent.includes('win');
 
           if (isMac) {
-            setStatus('✅ 코드 확인 완료. Mac 설치 방법을 선택하세요.', false);
-            macOptions.classList.remove('hidden');
-            windowsOptions.classList.add('hidden');
+            setStatus('✅ 코드 확인 완료!', false);
+            macGuide.classList.remove('hidden');
+            windowsGuide.classList.add('hidden');
           } else if (isWindows) {
-            setStatus('✅ 코드 확인 완료. Windows 설치 파일을 다운로드하세요.', false);
-            windowsOptions.classList.remove('hidden');
-            macOptions.classList.add('hidden');
+            setStatus('✅ 코드 확인 완료!', false);
+            windowsGuide.classList.remove('hidden');
+            macGuide.classList.add('hidden');
           } else {
-            setStatus('✅ 코드 확인 완료. 설치 방법을 선택하세요.', false);
-            macOptions.classList.remove('hidden');
-            windowsOptions.classList.remove('hidden');
+            // OS를 감지할 수 없는 경우 둘 다 표시
+            setStatus('✅ 코드 확인 완료! OS를 선택하세요.', false);
+            macGuide.classList.remove('hidden');
+            windowsGuide.classList.remove('hidden');
           }
+
+          // 가이드 섹션으로 스크롤
+          setTimeout(() => {
+            if (isMac) {
+              macGuide.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else if (isWindows) {
+              windowsGuide.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }, 100);
         } catch (error) {
           setStatus('서버 연결에 실패했습니다. 잠시 후 다시 시도하세요.', true);
-          macOptions.classList.add('hidden');
-          windowsOptions.classList.add('hidden');
+          macGuide.classList.add('hidden');
+          windowsGuide.classList.add('hidden');
         } finally {
           verifyButton.disabled = false;
         }
       });
 
-      async function downloadInstaller() {
-        setStatus('🚀 자동 설치 스크립트를 다운로드합니다...', false);
-
-        // 안내 박스 표시
-        installerInstructions.classList.remove('hidden');
-
-        // install-matching.command 파일 다운로드
-        // GitHub Pages에서 직접 다운로드하도록 설정
-        window.location.href = './install-matching.command';
-
-        setTimeout(() => {
-          setStatus('✅ 다운로드 완료! Downloads 폴더에서 스크립트를 우클릭 → "열기"로 실행하세요.', false);
-        }, 1000);
-      }
-
-      async function downloadDMG() {
-        dmgInstructions.classList.remove('hidden');
+      async function downloadMac() {
         await downloadFile('mac');
       }
 
@@ -364,7 +405,7 @@
         await downloadFile('win');
       }
 
-      async function downloadFile(platformType) {
+      async function downloadFile(platform) {
         if (!verifiedCode) {
           setStatus('라이선스 코드를 먼저 확인하세요.', true);
           return;
@@ -380,7 +421,7 @@
               apikey: SUPABASE_ANON_KEY,
               Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
             },
-            body: JSON.stringify({ code: verifiedCode, platform: platformType }),
+            body: JSON.stringify({ code: verifiedCode, platform }),
           });
           const data = await res.json();
 
@@ -393,21 +434,28 @@
           window.location.href = data.url;
 
           setTimeout(() => {
-            setStatus('✅ 다운로드가 시작되었습니다.', false);
+            setStatus('✅ 다운로드가 시작되었습니다. 위 가이드를 따라 설치를 진행하세요.', false);
           }, 1000);
         } catch (error) {
           setStatus('다운로드 링크 생성 중 오류가 발생했습니다.', true);
         }
       }
 
-      function copyCommand() {
-        const command = 'xattr -d com.apple.quarantine ~/Downloads/Matching*.dmg';
+      function copyMacCommand() {
+        const command = document.getElementById('macCommand').textContent;
+        const button = event.target;
+
         navigator.clipboard.writeText(command).then(() => {
-          const successMsg = document.getElementById('copySuccess');
-          successMsg.classList.remove('hidden');
+          const originalText = button.textContent;
+          button.textContent = '✅ 복사됨!';
+          button.classList.add('copied');
+
           setTimeout(() => {
-            successMsg.classList.add('hidden');
-          }, 3000);
+            button.textContent = originalText;
+            button.classList.remove('copied');
+          }, 2000);
+        }).catch(() => {
+          alert('복사에 실패했습니다. 명령어를 직접 선택하여 복사해주세요.');
         });
       }
     </script>
