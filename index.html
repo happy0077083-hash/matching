@@ -12,6 +12,8 @@
         --text: #1f1f1f;
         --accent: #1b4d3e;
         --accent-2: #d1a94d;
+        --success: #16a34a;
+        --warning: #d97706;
       }
       body {
         margin: 0;
@@ -20,7 +22,7 @@
         color: var(--text);
       }
       .wrap {
-        max-width: 860px;
+        max-width: 900px;
         margin: 0 auto;
         padding: 48px 24px 64px;
       }
@@ -29,20 +31,20 @@
         border-radius: 16px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         padding: 32px;
+        margin-bottom: 24px;
       }
       h1 {
         font-size: 28px;
         margin: 0 0 12px;
       }
+      h2 {
+        font-size: 20px;
+        margin: 24px 0 12px;
+        color: var(--accent);
+      }
       p {
         margin: 0 0 18px;
         line-height: 1.6;
-      }
-      .buttons {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 16px;
-        margin: 24px 0 12px;
       }
       .input-row {
         display: flex;
@@ -70,44 +72,172 @@
         border: none;
         cursor: pointer;
         font: inherit;
+        transition: all 0.2s;
+      }
+      .button:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
       }
       .button.secondary {
         background: var(--accent-2);
         color: #1f1f1f;
+      }
+      .button.success {
+        background: var(--success);
+        color: #fff;
+      }
+      .download-option {
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 16px 0;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .download-option:hover {
+        border-color: var(--accent);
+        background: #f9fafb;
+      }
+      .download-option.recommended {
+        border-color: var(--success);
+        background: #f0fdf4;
+      }
+      .download-option h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .download-option p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .badge.recommended {
+        background: var(--success);
+        color: #fff;
       }
       .note {
         font-size: 14px;
         color: #4a4a4a;
         margin-top: 8px;
       }
+      .warning-box {
+        background: #fff3cd;
+        border-left: 4px solid var(--warning);
+        padding: 16px;
+        border-radius: 8px;
+        margin: 20px 0;
+      }
+      .warning-box h4 {
+        margin: 0 0 8px;
+        color: #856404;
+        font-size: 16px;
+      }
+      .warning-box ol {
+        margin: 8px 0;
+        padding-left: 24px;
+      }
+      .warning-box li {
+        margin: 6px 0;
+        line-height: 1.5;
+      }
+      code {
+        background: #f3f4f6;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+      }
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
   <body>
     <div class="wrap">
       <div class="card">
-        <h1>Matching Data Extractor 다운로드</h1>
+        <h1>🏢 Matching Data Extractor 다운로드</h1>
         <p>구독 코드를 입력하면 설치 파일을 내려받을 수 있습니다.</p>
+
         <div class="input-row">
           <input id="licenseCode" placeholder="라이선스 코드 입력" />
           <button id="verifyButton" class="button">확인</button>
         </div>
-        <div class="buttons" id="downloadButtons" style="display:none;">
-          <button class="button" data-platform="mac">Mac 다운로드 (.dmg)</button>
-          <button class="button secondary" data-platform="win">Windows 다운로드 (.exe)</button>
-        </div>
+
         <p id="statusMessage" class="note"></p>
-        <p class="note" style="color: #d97706; font-weight: 500;">
-          ⚠️ Mac 보안 경고 해결: .dmg 파일을 <strong>우클릭 → "열기"</strong>로 실행하세요.
-          "손상되었습니다" 메시지가 나오면 더블클릭 대신 우클릭으로 여시면 됩니다.
-        </p>
+
+        <!-- Mac 다운로드 옵션 -->
+        <div id="macOptions" class="hidden">
+          <h2>Mac 설치 방법 선택</h2>
+
+          <!-- 옵션 1: 자동 설치 (권장) -->
+          <div class="download-option recommended" onclick="downloadInstaller()">
+            <h3>
+              🚀 자동 설치 (권장)
+              <span class="badge recommended">간편함</span>
+            </h3>
+            <p>설치 스크립트를 다운로드합니다. 더블클릭만 하면 자동으로 설치가 진행됩니다.</p>
+            <p style="margin-top: 8px; font-weight: 500; color: var(--accent);">
+              ✓ 터미널 명령어 불필요 &nbsp;|&nbsp; ✓ 한 번에 설치 완료
+            </p>
+          </div>
+
+          <!-- 옵션 2: 일반 설치 -->
+          <div class="download-option" onclick="downloadDMG()">
+            <h3>💾 일반 설치 (고급 사용자)</h3>
+            <p>DMG 파일을 다운로드합니다. 터미널 명령어 실행이 필요합니다.</p>
+            <p style="margin-top: 8px; font-weight: 500; color: #6b7280;">
+              ⚠️ 터미널 명령어 필요 &nbsp;|&nbsp; ⚠️ 수동 설치 과정
+            </p>
+          </div>
+
+          <!-- DMG 사용 시 안내 -->
+          <div id="dmgInstructions" class="warning-box hidden">
+            <h4>⚠️ Mac 사용자 필독 - DMG 설치 방법</h4>
+            <p><strong>다운로드 후 "손상되었습니다" 오류가 나면:</strong></p>
+            <ol>
+              <li>
+                <strong>방법 1 (권장):</strong> 터미널을 열고 아래 명령어 복사 → 붙여넣기 → Enter
+                <br><code>xattr -d com.apple.quarantine ~/Downloads/Matching*.dmg</code>
+                <button onclick="copyCommand()" class="button secondary" style="margin-top: 8px; padding: 8px 12px; font-size: 13px;">📋 명령어 복사</button>
+                <span id="copySuccess" class="hidden" style="color: var(--success); margin-left: 8px; font-weight: 500;">✅ 복사됨!</span>
+              </li>
+              <li><strong>방법 2:</strong> DMG 파일을 우클릭 → "열기" 선택 (더블클릭 대신)</li>
+            </ol>
+            <p style="font-size: 13px; color: #666; margin: 12px 0 0;">
+              💡 이 오류는 Apple 보안 정책 때문이며, 파일은 안전합니다.
+            </p>
+          </div>
+        </div>
+
+        <!-- Windows 다운로드 옵션 -->
+        <div id="windowsOptions" class="hidden">
+          <h2>Windows 설치 방법</h2>
+          <div class="download-option" onclick="downloadWindows()">
+            <h3>💻 Windows 설치 파일 다운로드</h3>
+            <p>.exe 파일을 다운로드합니다. 다운로드 후 더블클릭하여 설치하세요.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📋 설치 후 안내</h2>
+        <p>설치 후 바로 실행 가능하며, 데이터는 기존 Supabase 설정을 그대로 사용합니다.</p>
         <p class="note">
-          또는 터미널에서: <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">xattr -d com.apple.quarantine ~/Downloads/Matching*.dmg</code>
-        </p>
-        <p class="note">
-          설치 후 바로 실행 가능하며, 데이터는 기존 Supabase 설정을 그대로 사용합니다.
+          문제가 발생하면 라이선스 코드와 함께 문의해 주세요.
         </p>
       </div>
     </div>
+
     <script>
       const SUPABASE_URL = 'https://wglaczlazyltjbsugtez.supabase.co';
       const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnbGFjemxhenlsdGpic3VndGV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEzODY0NDQsImV4cCI6MjA2Njk2MjQ0NH0.cmMwNID-5qzh-JJ9LbI3Rce-VInHQn55dOM4U20y24k';
@@ -115,8 +245,13 @@
 
       const codeInput = document.getElementById('licenseCode');
       const verifyButton = document.getElementById('verifyButton');
-      const downloadButtons = document.getElementById('downloadButtons');
       const statusMessage = document.getElementById('statusMessage');
+      const macOptions = document.getElementById('macOptions');
+      const windowsOptions = document.getElementById('windowsOptions');
+      const dmgInstructions = document.getElementById('dmgInstructions');
+
+      let verifiedCode = '';
+      let platform = '';
 
       function setStatus(text, isError) {
         statusMessage.textContent = text || '';
@@ -147,28 +282,67 @@
 
           if (!res.ok || !data.ok) {
             setStatus(data.message || '코드 확인에 실패했습니다.', true);
-            downloadButtons.style.display = 'none';
+            macOptions.classList.add('hidden');
+            windowsOptions.classList.add('hidden');
             return;
           }
 
-          setStatus('코드 확인 완료. OS를 선택하세요.', false);
-          downloadButtons.style.display = 'grid';
+          verifiedCode = code;
+
+          // OS 감지
+          const userAgent = navigator.userAgent.toLowerCase();
+          const isMac = userAgent.includes('mac');
+          const isWindows = userAgent.includes('win');
+
+          if (isMac) {
+            setStatus('✅ 코드 확인 완료. Mac 설치 방법을 선택하세요.', false);
+            macOptions.classList.remove('hidden');
+            windowsOptions.classList.add('hidden');
+          } else if (isWindows) {
+            setStatus('✅ 코드 확인 완료. Windows 설치 파일을 다운로드하세요.', false);
+            windowsOptions.classList.remove('hidden');
+            macOptions.classList.add('hidden');
+          } else {
+            setStatus('✅ 코드 확인 완료. 설치 방법을 선택하세요.', false);
+            macOptions.classList.remove('hidden');
+            windowsOptions.classList.remove('hidden');
+          }
         } catch (error) {
           setStatus('서버 연결에 실패했습니다. 잠시 후 다시 시도하세요.', true);
-          downloadButtons.style.display = 'none';
+          macOptions.classList.add('hidden');
+          windowsOptions.classList.add('hidden');
         } finally {
           verifyButton.disabled = false;
         }
       });
 
-      downloadButtons.addEventListener('click', async (event) => {
-        const button = event.target.closest('button[data-platform]');
-        if (!button) return;
+      async function downloadInstaller() {
+        setStatus('🚀 자동 설치 스크립트를 다운로드합니다...', false);
 
-        const code = (codeInput.value || '').trim();
-        const platform = button.dataset.platform;
+        // install-matching.command 파일 다운로드
+        // GitHub Pages에서 직접 다운로드하도록 설정
+        window.location.href = './install-matching.command';
 
-        button.disabled = true;
+        setTimeout(() => {
+          setStatus('✅ 다운로드 완료! Downloads 폴더에서 "install-matching.command" 파일을 더블클릭하세요.', false);
+        }, 1000);
+      }
+
+      async function downloadDMG() {
+        dmgInstructions.classList.remove('hidden');
+        await downloadFile('mac');
+      }
+
+      async function downloadWindows() {
+        await downloadFile('win');
+      }
+
+      async function downloadFile(platformType) {
+        if (!verifiedCode) {
+          setStatus('라이선스 코드를 먼저 확인하세요.', true);
+          return;
+        }
+
         setStatus('다운로드 링크 생성 중...', false);
 
         try {
@@ -179,7 +353,7 @@
               apikey: SUPABASE_ANON_KEY,
               Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
             },
-            body: JSON.stringify({ code, platform }),
+            body: JSON.stringify({ code: verifiedCode, platform: platformType }),
           });
           const data = await res.json();
 
@@ -190,12 +364,25 @@
 
           setStatus('다운로드를 시작합니다...', false);
           window.location.href = data.url;
+
+          setTimeout(() => {
+            setStatus('✅ 다운로드가 시작되었습니다.', false);
+          }, 1000);
         } catch (error) {
           setStatus('다운로드 링크 생성 중 오류가 발생했습니다.', true);
-        } finally {
-          button.disabled = false;
         }
-      });
+      }
+
+      function copyCommand() {
+        const command = 'xattr -d com.apple.quarantine ~/Downloads/Matching*.dmg';
+        navigator.clipboard.writeText(command).then(() => {
+          const successMsg = document.getElementById('copySuccess');
+          successMsg.classList.remove('hidden');
+          setTimeout(() => {
+            successMsg.classList.add('hidden');
+          }, 3000);
+        });
+      }
     </script>
   </body>
 </html>
